@@ -88,6 +88,10 @@ examples
 
 Run `setup.sh`. Install needed python modules afterwards using `pip install -r docs/requirements.txt`.
 
+# Author
+
+noptrix
+
 # Notes
 
 - Please check the manpage from docs/nullscan.1
@@ -95,9 +99,6 @@ Run `setup.sh`. Install needed python modules afterwards using `pip install -r d
 - nullscan is already packaged and available for [BlackArch Linux](https://www.blackarch.org/)
 - My master-branches are always dev-branches; use releases for stable versions.
 - All of my public stuff you find are officially announced and published via [nullsecurity.net](https://www.nullsecurity.net).
-
-# Author
-noptrix
 
 # License
 
