@@ -27,7 +27,7 @@ import datetime
 
 
 # nullscan version banner
-VERSION = 'nullscan v1.0.0'
+VERSION = 'nullscan v1.1.0-dev'
 
 # our own (exit) error codes
 SUCCESS = 0
