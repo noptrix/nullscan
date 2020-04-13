@@ -94,6 +94,7 @@ using `pip install -r docs/requirements.txt`.
 - Please check the manpage from docs/nullscan.1
 - Use '?' option-value for any cmdline options. It gives you information for usage and examples.
 - nullscan is already packaged and available for [BlackArch Linux](https://www.blackarch.org/)
+- All of my public stuff you find are officially announced and published via [nullsecurity.net](https://www.nullsecurity.net).
 
 # Author
 noptrix
