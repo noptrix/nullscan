@@ -99,6 +99,10 @@ Run `setup.sh`. Install needed python modules afterwards using `pip install -r d
 # Author
 noptrix
 
+# License
+
+Check docs/LICENSE.
+
 # Disclaimer
 We hereby emphasize, that the hacking related stuff found on
 [nullsecurity.net](http://nullsecurity.net/) are only for education purposes.
