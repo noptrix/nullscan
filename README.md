@@ -86,8 +86,7 @@ examples
 
 # Installation
 
-Type `make` and follow instructions. Install needed python modules afterwards
-using `pip install -r docs/requirements.txt`.
+Run `setup.sh`. Install needed python modules afterwards using `pip install -r docs/requirements.txt`.
 
 # Notes
 
