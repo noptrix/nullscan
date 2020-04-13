@@ -1,0 +1,8 @@
+A few important notes:
+
+  * install required pydeps first (docs/requirements.txt)
+  * run 'nullscan -C' to see which tools are missing
+  * nullscan is recommended to be used with BlackArch repository (all tools)
+  * read the fucking code and check manpage and '?' flag for options
+  * read docs/TODO before requesting for new features etc. :)
+

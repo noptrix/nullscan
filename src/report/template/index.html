@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>nullscan - Report</title>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="css/bootstrap.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="css/sb-admin.css" rel="stylesheet">
+
+  <!-- Morris Charts CSS -->
+  <link href="css/plugins/morris.css" rel="stylesheet">
+
+  <!-- Custom Fonts -->
+  <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+</head>
+
+<body>
+
+  <div id="wrapper">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">nullscan</a>
+      </div>
+      <!-- Top Menu Items -->
+      <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav side-nav">
+          <li class="active">
+            <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Overview</a>
+          </li>
+          <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#tcp"><i class="fa fa-fw fa-arrows-v"></i> TCP <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="tcp" class="collapse">
+              $TARGETS_TCP
+            </ul>
+          </li>
+          <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#udp"><i class="fa fa-fw fa-arrows-v"></i> UDP <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="udp" class="collapse">
+              $TARGETS_UDP
+            </ul>
+          </li>
+          <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#web"><i class="fa fa-fw fa-arrows-v"></i> Web <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="web" class="collapse">
+              $TARGETS_WEB
+            </ul>
+          </li>
+          <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#lan"><i class="fa fa-fw fa-arrows-v"></i> LAN <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="lan" class="collapse">
+              $TARGETS_LAN
+            </ul>
+          </li>
+          <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#wifi"><i class="fa fa-fw fa-arrows-v"></i> WiFi <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="wifi" class="collapse">
+              $TARGETS_WIFI
+            </ul>
+          </li>
+          <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#social"><i class="fa fa-fw fa-arrows-v"></i> Social <i class="fa fa-fw fa-caret-down"></i></a>
+            <ul id="social" class="collapse">
+              $TARGETS_SOCIAL
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+
+    <div id="page-wrapper">
+
+      <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="row">
+          <div class="col-lg-12">
+            <h1 class="page-header">
+              nullscan Report <small>$DATE</small>
+            </h1>
+            <!--
+            <ol class="breadcrumb">
+              <li>
+                <i class="fa fa-dashboard"></i> <a href="index.html">Overview</a>
+              </li>
+            </ol>
+            -->
+          </div>
+        </div>
+        <div class="col-sm4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Command</h3>
+            </div>
+            <div class="panel-body">
+              $CMDLINE_ARGS
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Modes</h3>
+            </div>
+            <div class="panel-body">
+              <table width="250">
+                <tr>
+                  <td>TCP</td>
+                  <td>$NUM_TCP</td>
+                </tr>
+                <tr>
+                  <td>UDP</td>
+                  <td>$NUM_UDP</td>
+                </tr>
+                <tr>
+                  <td>Web</td>
+                  <td>$NUM_WEB</td>
+                </tr>
+                <tr>
+                  <td>LAN</td>
+                  <td>$NUM_LAN</td>
+                </tr>
+                <tr>
+                  <td>WiFi</td>
+                  <td>$NUM_WIFI</td>
+                </tr>
+                <tr>
+                  <td>Social</td>
+                  <td>$NUM_SOCIAL</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+
+    </div>
+    <!-- /#page-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- jQuery -->
+  <script src="js/jquery.js"></script>
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

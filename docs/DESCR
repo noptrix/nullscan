@@ -1,0 +1,10 @@
+A modular framework designed to chain and automate security tests. It parses
+target definitions from the command line and runs corresponding modules and
+their nullscan-tools afterwards. It can also take hosts and start nmap first in
+order to perform a basic portscan and run the modules afterwards. Also, nullscan
+can parse a given nmap logfile for open tcp and udp ports and again run the
+modules afterwards. All results will be logged in specified directories with a
+clean structure and a HTML report can subsequently be generated.
+
+This code is dedicated to my friend Zeljko (R.I.P.), who passed away,
+2nd Dec 2012.

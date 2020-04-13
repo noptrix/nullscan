@@ -1,0 +1,12 @@
+bs4:beautifulsoup4
+colorama:colorama
+dns.resolver:dnspython
+getmac:getmac
+googlesearch:google
+ipwhois:ipwhois
+libnmap:python-libnmap
+netaddr:netaddr
+netifaces:netifaces
+requests:requests
+whois:python-whois
+psutil:psutil

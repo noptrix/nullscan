@@ -1,0 +1,12 @@
+beautifulsoup4
+colorama
+dnspython
+get-mac
+google
+ipwhois
+netaddr
+netifaces
+psutil
+python-libnmap
+python-whois
+requests

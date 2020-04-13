@@ -1,0 +1,770 @@
+.TH nullscan "1" "Oct 2019" "nullscan" "nullscan documentation"
+
+.SH NAME
+nullscan - A modular framework designed to chain and automate security tests.
+
+.SH SYNOPSIS
+.B nullscan
+<modes> [options] | <misc>
+
+.SH DESCRIPTION
+nullscan is a modular framework designed to chain (see
+.B Chains
+sub-section) and automate security tests.
+It parses target definitions from the command line
+and runs the corresponding modules (see
+.B Modules
+sub-section) and their nullscan-tools (see
+.B Nullscan-Tools
+sub-section) afterwards.
+It can also take targets (in this case `targets` means hosts)
+and start nmap first in order to perform a basic portscan
+and run the modules afterwards.
+Also, nullscan can parse a given nmap logfile for open TCP and UDP ports
+and again run the modules afterwards.
+All results will be logged
+(see
+.B Logging
+sub-section)
+in specified directories with a clean structure and a HTML report
+can subsequently be generated.
+.PP
+Another usage aspect of nullscan is
+that you can use it as a reference guide for
+security tests by commenting all nullscan-tools in each module.
+The docstrings are parsed and the
+.B -p
+option (see
+.B OPTIONS
+section) can be used to read their descriptions.
+.PP
+nullscan can be adjusted according to your needs by adding your own modules
+and nullscan-tools (see
+.B -m
+and
+.B -a
+options).
+.PP
+nullscan is
+.I not
+intended to be a fully featured security framework.
+It is up to the user to define his/her own modules and nullscan-tools.
+The predefined modules should be seen more or less as examples
+using public tools and test scenarios.
+A lot of internal and private tools were removed prior the publication.
+If you are lucky, you might find some of my private tools
+if I forgot to remove them or was in good mood to share them with you.
+
+.B Modules
+.PP
+nullscan has currently seven module directories:
+
+.nf
+.in +4n
+1. host
+2. lan
+3. social
+4. tcp
+5. udp
+6. web
+7. wifi
+.in
+.fi
+
+They contain the predefined modules and nullscan-tools
+which include often well-known security tools and tests.
+Each directory contains a
+.I default.py
+file, which should be used to add generic and default security tests.
+Additionally, it should be used as a template
+to add or create custom modules using the
+.B -m
+and
+.B -a
+option (see
+.B OPTIONS
+sections). Do not remove
+.I
+default.py
+files!
+.PP
+The filename format for the modules (scripts) is irrelevant.
+.PP
+A module consists of a Python class, a constructor,
+and additional methods representing the nullscan-tools.
+
+.B Chains
+.PP
+As mentioned above the idea is to chain modules and nullscan-tools
+based on prior results of other modules.
+Currently only rudimentary chains are implemented.
+More chains will be implemented in the future.
+.PP
+Chaining appears in various ways.
+The following unsorted examples should give you an idea
+of what 'chaining' in nullscan really means.
+.PP
+.in +4n
+.I modules
+<->
+.I nullscan-tools
+
+The initial point of chaining the modules and nullscan-tools is always the
+.I default.py
+module in each module directory.
+Based on results other nullscan-tools will be fired up.
+Within other modules other chaining can happen.
+For example, after
+.I host/subdomain.py
+has completed.
+Then
+.I host/whois.py
+merges all subdomains into a single file and
+iterates over the subdomains to get ip-addresses to perform whois lookup
+in order to get CIDR-ranges and ASN descriptions and so on.
+So the chain would be:
+.I host/subdomain.py
+->
+.I host/whois.py
+
+.I nullscan-tools
+<->
+.I nullscan-tools
+
+Within a same module nullscan-tool can depend on other nullscan-tool.
+For example: results of 'domainname' are needed for 'dns_zonetransfer'
+in order to check for DNS zonetransfer.
+In this case the 'dns_zonetransfer' tool would block and wait
+until 'domainname' is finished in order to get the results from the
+logfile.
+Within same module another tool called 'all_subdomains'
+wants to merge all found subdomains into a single list.
+This time 'all_subdomains' would have to wait for 'dns_zonetransfer'
+in order to parse potential subdomains out of the logfile.
+
+.I LAN modules
+->
+.I HOST modules
+->
+.I TCP/UDP modules
+
+.I LAN
+modules will be run first.
+The 'arpsweep' tool discovers alive hosts.
+An nmap portscan will be performed subsequently on live hosts.
+Based on the portscan results
+.I HOST
+modules will run and finally the
+.I TCP
+and/or
+.I UDP
+modules will be run against the discovered services
+depending on the scan type.
+
+.B Note:
+
+Chainings of social and web modules are not really implemented yet.
+They will be implemented soon as stated above.
+.in
+
+.B Logging
+.PP
+The result of any nullscan-tools will be logged in ascii text
+(with color codes escaped
+if the external tool had no options to disable colors)
+using the following filename format:
+.PP
+.in +4n
+<method_name.log>
+.in
+
+For example, if a nullscan-tool is named like:
+
+.in +4n
+my_ssh_audit()
+.in
+
+then the logfile will be named as followed:
+.I my_ssh_audit.log
+and will be saved under the corresponding target/../ directory.
+Here is an example output of a nullscan log directory:
+.in +4n
+
+[hacker@blackarch ~/nullscan]$ tree -C nullscan-2019-09-29/logs/
+
+nullscan-2019-09-29/logs/
+
+└── targets
+    └── blackarch.org
+        └── host
+            ├── default
+            │   ├── domainname.log
+            │   ├── hostname.log
+            │   ├── ipv4addr.log
+            │   ├── ipv4cidr.log
+            │   ├── ipv4range.log
+            │   ├── mailserver.log
+            │   └── nameserver.log
+            └── search
+                ├── domain_urls.log
+                └── shodan.log
+.in
+.B Modes
+.PP
+nullscan currently supports three modes:
+.in +4n
+
+.B 1.
+Scan hosts using nmap and then parse results
+in order to run corresponding modules and nullscan-tools afterwards
+(see
+.B -t
+option).
+
+.B 2.
+Run the modules and nullscan-tools directly on any targets given as URIs
+(see
+.B -u
+option).
+
+.B 3.
+Read hosts from a given nmap xml logfile (see
+.B -l
+option).
+.in
+
+.B Module Develpment
+
+.I Constructor
+.PP
+The constructor,
+.B __init__()
+gets always 3 parameters: self, target, and opts.
+It also always instantiates the
+.B Base()
+class from
+.B libs/base.py,
+after that the whole class (module) has
+.B self.target
+and
+.B self.opts
+declared and initiated.
+The default constructor looks like this:
+.PP
+.nf
+  def __init__(self, target, opts):
+    """ init """
+
+    Base.__init__(self, target, opts)
+
+    return
+.fi
+.PP
+The self.target can be a dictionary if it's a host-target containing
+.B host and
+.B port
+key.
+Otherwise it will be a string containing the target for
+.B lan, social, web or wifi.
+The
+.B self.opts
+will contain all options set by the config file or commandline
+option
+.B -o
+and more, respectively.
+Please refer to the examples already given.
+
+You can of course define other stuff within the constructor
+without breaking anything.
+But before doing that, you should take a look and see
+if one of the parent classes already defines what you need.
+
+.I Methods (nullscan-tools)
+
+The methods (nullscan-tools) are defined in modules.
+They basically define options for security tools or tests
+and then run that tool via
+.B Base._run_tool()
+or
+.B Base._run_cmd()
+methods.
+Each nullscan-tool within a module name must begin with a
+.B @tool
+decorator.
+.PP
+Here is an example with almost each line commented
+so you can get a better idea.
+A simple nullscan-tool definition should look like this:
+.nf
+
+  @tool
+  def dnsspider(self):
+    """
+    DESCR: Scan for subdomains. (ext) # this is mandatory: for '-p' option
+    TOOLS: dnsspider # this is mandatory: for '-C' option
+    """
+
+    opts = '-t 0 -x 50 '    # define default opts for dnsspider
+
+    # skip if it's a priv-ip since we don't want to scan for subdomains for
+    # priv ip-addresses.
+    if not self.target['privip']:
+
+      # block and wait until domainname() was finished so we can get the
+      # domainname of target from the domainname.log file
+      domain = self._read_log('domainname')[0]
+
+      if domain:
+        # define more options and the target domain
+        opts += f' -r dnsspider.log -a {domain}'
+
+        # run tool but skip logging since dnsspider's
+        # offer -r option to log simply subdomains in a list
+        self._run_tool('dnsspider', opts, create_log=False)
+
+    return
+
+.fi
+Of course there are tons of other cases where for example the
+.B _run_cmd
+was used instead of
+.B _run_tool
+method.
+So please refer to given modules and tools to understand more.
+Most of the things should be self-explanatory.
+
+So for recap:
+A simple and minimalistic nullscan-tool can be defined like this:
+.nf
+
+  @tool
+  def foobar(self):
+    """
+    DESCR: Foo does bar and we can get Foobar. (ext)
+    TOOLS: foobar
+    """
+
+    opts = '-f foo -b bar'
+
+    self._run_tool('foobar', opts)
+
+    return
+
+.fi
+IMPORTANT:
+
+As we already stated in in the first example:
+DESCR and TOOLS in the docstrings are mandatory for the
+.B -p
+and
+.B -C
+option. The
+.B (ext)
+means that we use an external tool (dnsspider, foobar).
+If you write your own nullscan-tool using only Python,
+then you should use
+.B (int)
+instead or even
+.B (priv)
+if you don't want to share it.
+That way you can later filter them prior to publication.
+The TOOLS dosctring line is meant to list all tools
+which the defined nullscan-tools depend on.
+Multiple tools can be listed separated by a space, for example:
+.B TOOLS: nmap sqlmap whatweb
+The
+.B -C
+option will then check if these tools are missing on the system or not.
+
+.B Config
+.PP
+nullscan offers a config file in
+.B conf/nullscan.cfg
+which is an ini-style based config.
+The config file should be self-explanatory and everything is commented.
+The only thing we should mention here is that modules and nullscan-tools
+which are defined in the corresponding config directives
+will be merged with the tools
+given in the inclusion/exclusion on the command line.
+For example:
+If the config file has defined
+.B in_tools = foo,bar
+and you run nullscan with
+.B -I 'foobar'
+, then this will result in:
+.B in_tools = 'foo,bar,foobar'
+Anything else please refer in
+.B nullscan.cfg
+file itself.
+.PP
+
+.SH MODES
+.P
+.B -t
+.I <host> | <host1>,...,<hostN> | <host-range> | <cidr-range> | <file>
+(single/multiple hosts, host ranges, host cidr ranges, hostlist file)
+.RS 3
+Specifies hosts to scan via nmap.
+The portscan results will be parsed at the end
+and modules and nullscan-tools will be run
+based on the services (open ports) found.
+.PP
+Note: Syntax info can be printed out using '?'.
+.PP
+You can either define a single host, multiple hosts separated by comma,
+or a range given in host-range format or CIDR-range format.
+.PP
+.B Examples:
+.PP
+104.90.159.63,23.192.25.159,microsoft.com
+.PP
+192.168.0.1-192.168.0.254
+.PP
+192.168.0.0/28
+.PP
+hostlist.txt
+.RE
+.PP
+.B -u
+.I URIs
+(URLs)
+.RS 3
+Specifies targets via URIs,
+which will be used to run modules based on protocol (scheme) defintion.
+Multiple URIs must be separated using ';'.
+When using 'tcp' or 'udp' port services will be looked up from
+.B lists/services.csv
+file (a modified file based on nmap's services).
+You can also force a given port to a specific service, see examples below.
+Multiple ports need to be separated by a comma.
+.PP
+Note: Syntax info can be printed out using '?'.
+.PP
+.B Examples:
+.PP
+\'tcp://192.168.0.1:22,2022=ssh,8080;https://localhost/index.php?id=1;
+person://bill gates;lan://eth0'
+.RE
+.PP
+.B -l
+.I file
+(xml nmap logfile)
+.RS 3
+Specifies an xml nmap logfile.
+The logfile will be used to parse the target hosts and open tcp/udp ports.
+It will then run the modules and nullscan-tools.
+.RE
+.PP
+
+.SH OPTIONS
+.PP
+
+.B -o
+.I args
+(args ...)
+.RS 3
+Specifies extra options for the modes.
+The syntax can be printed out using '?'.
+Multiple option-value pairs must be separated by ';'.
+Also, multiple values must be separated by ','.
+It is recommended to use single-quotes if you have spaces or generally
+if you want to escape within a given option-string.
+See examples below.
+You can also overwrite tools-options in nullscan-tools.
+For example:
+If 'sqlmap' has predefined tools, in your do_sqlmap() nullscan-tool
+these options can be then overwritten
+by using 'do_sqlmap=[your own sqlmap options here]'.
+Please use '?' to see more information about this.
+.PP
+.B Examples:
+.PP
+\'rhost=192.168.0.1;sport=1337;ndev=em0;ssid=nullsex;user=root;
+plists=/tmp/pass1.txt,~/haxx/mylists/pass2.txt;
+dirsearch_web=-o my -p "own opts" -c 1 -f 4;
+nmap=-sS -p 80,443 --allports -vv -n;'
+.RE
+.PP
+
+.B -i
+.I modules
+(modules)
+.RS 3
+Specifies the modules to be included.
+Default is 'all'.
+A module must be a script filename
+from any of the modules/{host,tcp,udp,web,lan,social,wifi} directories.
+Multiple values must be separated using ','.
+.PP
+.B Examples:
+.PP
+\'tcp=ftp,ssh;udp=syslog,nfs;host=subdomains;web=sqli,xss'
+.RE
+.PP
+
+.B -I
+.I nullscan-tools
+(nullscan-tools)
+.RS 3
+Specifies the nullscan-tools to be included.
+Default is 'all' except the ones excluded in the config file.
+A nullscan-tool must be a method name.
+Multiple values must be separated using ','.
+.PP
+.B Examples:
+.PP
+\'ipv4addr,dnsspider,showmount'
+.RE
+.PP
+
+.B -x
+.I modules
+(modules)
+.RS 3
+Specifies the modules to be excluded. Defaults are defined in
+.B conf/nullscan.cfg
+A module must be a script filename
+from either of the modules/{host,tcp,udp,web,lan,wifi,social} directories.
+Multiple values must be separated using ','.
+.PP
+.B Example:
+.PP
+\'tcp=ftp,ssh;udp=syslog,nfs;host=subdomains;web=sqli,xss'
+.RE
+.PP
+
+.B -X
+.I nullscan-tools
+(nullscan-tools)
+.RS 3
+Specifies the nullscan-tools to be excluded.
+Defaults are predefined in the config file.
+A nullscan-tool must be a method name.
+Multiple values must be separated using ','.
+.PP
+.B Example:
+.PP
+\'ipv4addr,dnsspider,showmount'
+.RE
+.PP
+
+.B -T
+.I num workers
+(num workers for parallel target checks)
+.RS 3
+Specifies how many parallel targets should be checked.
+The default is 10.
+Multiprocessing is used here.
+.RE
+.PP
+
+.B -M
+.I num workers
+(num workers for parallel modules)
+.RS 3
+Specifies how many parallel modules should started.
+The default is 5.
+Multiprocessing is ued here.
+.RE
+.PP
+
+.B -P
+.I num workers
+(num workers for parallel nullscan-tools)
+.RS 3
+Specifies how many parallel nullscan-tools should started.
+The default is 10.
+Multiprocessing is used here.
+.RE
+.PP
+
+.B -k
+.I seconds
+(num seconds for nullscan-tool timeout)
+.RS 3
+Specifies how many seconds to wait
+before declaring a nullscan-tool as timed out.
+Default is: 0.0 which means disabled.
+Note:
+Some nullscan-tools have their own local timeout
+defined within the methods.
+.RE
+.PP
+
+.B -r
+(generate an HTML report)
+.RS 3
+If this option is used, an HTML report will be generated at the end.
+.RE
+.PP
+
+.B -R
+.I directory
+(work, log and report dir)
+.RS 3
+Specifies an alternative working directory
+where to save logs and report at the end.
+Default is: "nullscan-$(pwd)/$(date +%F)"
+.RE
+.PP
+
+.B -c
+.I config file
+(nullscan's config file)
+.RS 3
+Specify path to config file.
+Default is: $NULLSCAN_DIR/conf/nullscan.cfg
+.RE
+.PP
+
+.B -v
+(verbose mode)
+.RS 3
+Verbose mode: Print more information while performing the scans.
+.RE
+.PP
+
+.B -d
+(debug mode)
+.RS 3
+Normally, nullscan-tools log tools actions and results in a logfile.
+With this option set actions and results will be printed to stdout as well.
+.RE
+.PP
+
+.SH MISC
+.PP
+.B -C
+.RS 3
+This option checks for missing tools on the system.
+This is recommended before running nullscan.
+It will support installing missing tools in the future.
+Note:
+BlackArch Linux (https://www.blackarch.org/) is recommended for nullscan.
+Install all tools using the command:
+.B
+sudo pacman -S blackarch --needed
+.RE
+.PP
+.B -p
+.I all[;moddir;moddir2=mod1,mod2;...;moddirN]
+(print tools)
+.RS 3
+This option prints available tools with their short descriptions.
+Different modules and multiple values can be specified.
+Use '?' for syntax info.
+.PP
+.B Examples:
+.PP
+# prints all nullscan-tools
+.PP
+\'all'
+.PP
+# prints all nullscan-tools from tcp/, udp/ and social/
+.PP
+\'tcp;udp;social'
+.PP
+# print nullscan-tools from specific modules
+.PP
+\'host=default,whois;lan=default,arp;tcp'
+.RE
+.PP
+.B -m
+.I <moddir/modname> <func> [tool] [tool_args]
+(create and add a new module)
+.RS 3
+This option creates new modules on the fly.
+Only one initial tool should be added.
+More tools can then be added afterwards using the \'-a' option
+or directly edit the module-source file itself respectively.
+Also, note that if format-strings were used as arguments
+then they need to be edited manually in the source file afterwards.
+Use '?' for infos.
+.PP
+.B Examples:
+.PP
+\'tcp/mysql crack_mysql mysqlcrax0r --host {0} --port {1}'
+.RE
+.PP
+.B -a
+.I <moddir/modname> <func> [tool] [tool_args]
+(add a new nullscan-tool)
+.RS 3
+This option adds a new tool to an existing module.
+Only one tool can be added together with arguments per '-a' call.
+Also, note that if format-strings were used as arguments
+then they need to be edited manually in the source file afterwards.
+Use '?' for information.
+.PP
+.B Examples:
+.PP
+\'host/icmp ping_flood ping -f -s 9999 {0}'
+.RE
+.PP
+.B -V
+.RS 3
+Print nullscan's version number and exit.
+.RE
+.PP
+.B -H
+.RS 3
+Print the nullscan help/usage message and exit.
+.RE
+.PP
+
+.SH EXAMPLES
+.PP
+.nf
+# Scan network 192.168.0.0/24. Parse nmap results and run TCP modules SSH
+# and HTTP. Include only hydra_ssh and crack_http_auth and create a report
+# at the end.
+-t 192.168.0.0/24 -i tcp=ssh,http -r -I hydra_ssh,crack_http_auth
+
+# Directly attack given targets and services. Pass user defined options and
+# overwrite options for dirsearch.
+-u 'tcp://nsa.gov:80=http,22=ssh;udp://foo.bar:1337;
+    http://fbi.gov,https://cia.gov;mail://foo@bar.baz;
+    person://justin bieber,noptrix;lan://eth0,tap0;wifi://wlan0'
+    -o 'user=root;plists=/tmp/pwds.txt;rhost=192.168.0.1;
+    sport=1337;dirsearch_web=-o my -p "own opts" -c 1 -f 4;'
+
+# Parse nmap xml logfile. Attack found hosts and services but use only
+# HOST/icmp.py and TCP/default.py modules and nullscan-tools.
+-l /tmp/scanned.xml -i 'host=icmp;tcp=default' -r
+
+# Scan hosts from hosts.txt. Exclude nullscan-tools: sqlmap and wpscan.
+# Overwrite options for nullscan-tools: httping_web and rpcdump_udp.
+# Be verbose.
+-t hosts.txt -X sqlmap,wpscan -v -o 'httping_web=-p cia.gov;
+   rpcdump_udp=-f foo -b bar;nmap=-sT,-n,-p-;'
+
+# Print nullscan-tools from tcp/ssh.py and tcp/http.py. Print also all
+# nullscan-tools from host/zonetransfer.py
+# and all nullscan-tools from udp/.
+-p 'tcp=ssh,http;host=zonetransfer;udp'
+
+# Create a new module directory and module named icmp/ping.py with
+# nullscan_tool ping_flood using ping command and specified arguments.
+-m 'icmp/ping ping_flood ping -f -s 9999'
+
+# Add a new tool called crack_ssh using external tool sshcracker
+# to existing tcp/ssh.py module with specified arguments.
+-a 'tcp/ssh crack_ssh sshcracker -c arg -f arg'
+.fi
+
+.SH NOTES
+I hereby emphasize that nullscan is for education purposes only.
+I do not take any responsibility for any abuse or misuse.
+For install instructions, read the INSTALL file.
+For usage instruction, refer to the '-H' option or nullscan(1).
+
+Before sending me feature requests,
+you should take a look into docs/TODO list.
+Bug reports are always welcome.
+
+.SH AUTHOR
+This manual page was written by Levon Kayan <noptrix@nullsecurity.net>.
+Permission is granted to copy,
+distribute and/or modify this document under the
+terms of the GNU General Public License, Version 3 or any later version
+published by the Free Software Foundation.

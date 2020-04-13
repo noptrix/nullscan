@@ -1,0 +1,174 @@
+ChangeLog and TODO list for nullscan
+=================================
+
+
+===> 1.X.X
+
+  [ ] add chaining for social -> host/tcp/udp/web
+  [ ] add chaining for host/tcp/udp -> web
+  [ ] add code analysis mode: binary / source code
+  [ ] add autopwn mode: mass scan, checks and pwn
+  [ ] masscan scanner support (?)
+  [ ] saving and restoring nullscan session (awesome!)
+  [ ] offer option to not start tcp/udp scans after LAN and WiFi
+  [ ] add more and in-depth intelligency to modules / tools, especially
+      for web and social, more chaining etc.
+  [ ] extend the checks in check_*_mode_opts() (validations)
+  [ ] add the command used to run the tool in report
+  [ ] implement pipes or semaphore (comm channel, ctrl+c fuckups, etc.)
+  [ ] add support for target and module timeout
+  [ ] offer to install a missing tool in conjunction with -C option
+  [ ] print info about missing tool while scanning
+  [ ] refactor report/html.py (use self.res rather than opts)
+  [ ] more and better exception handlings
+  [ ] convert more external tools to internal python tools
+  [ ] code clean-up/refactoring and design fixes (design is fucked up)
+  [ ] update man-page. add more infos etc. currently it's minimalistic
+
+
+===> 1.0.0
+
+  [x] testing for 1.0.0 release
+  [x] create a setup.sh
+  [x] implemented timeout option for internal (python) tools
+  [x] check, update and add new tools + add rudimentary intelligency
+  [x] manpage (sh->py)
+  [x] also distinguish between public and private ip-addresses when using nmap
+      mode option (-t).
+  [x] add support for defining single target, host-ranges (host+cidr) next to
+      hostlist option
+  [x] make dynamic logpath creation
+  [x] replace format() with f''. new python style.
+  [x] distinguish between private, internal and external tools (add marker)
+  [x] add support for overwriting in-build nullscan_tools options via cmdline,
+      e.g: -o '...;dnsspider=-f foo -b bar;...'
+  [x] implement _logentry_exists(): don't run $tool if already ran. this is good
+      if we are on same subnet or so, to not scan, for example, subdomains over
+      same domain multiple times.
+  [x] -I option (default modules and tools still need to be run)
+  [x] add+replace placeholder $SNOOP_DIR in conf to ROOT_PATH in code
+  [x] support arbitrary nmap options via cmdline and config
+  [x] check add-modules/add-tools
+  [x] add timeout for tools
+  [x] add debug mode (tools outputs while scanning)
+  [x] remove shell scriptings in modules
+  [x] delete all logfiles of size 0 byte
+  [x] report error for missing dependencies/py-modules
+  [x] make proper html report (look & feel, jquery?, etc.)
+  [x] add one-liner of missing tools for -C option
+  [x] support parallel tool runs (multiprocessing)
+  [x] support parallel module runs (multiprocessing)
+  [x] add parallel target checks (multiprocessing)
+  [x] new mode: read in targets from file and start portscan, then nullscan
+  [x] audit services on non-default ports
+  [x] update options list / split into groups (-o)
+  [x] add short description to each audit when listing with '-l'
+  [x] port code to python3
+
+
+===> 0.9
+
+  [x] added check for timeout
+  [x] updated $SUCCESS and $FAILURE codes
+  [x] new module: social (initial)
+  [x] added color output
+  [x] declare globals in global.sh
+  [x] add 'TOOLS: ' for make_module() and audit_module()
+  [x] add vmsg(), amsg() and smsg(), get rid of > ${VERBOSE} 2>&1 lines
+  [x] create new nullscan-<date> dir if already exists (increment)
+  [x] change TODO style
+  [x] added syntax example for -l, -i and -x options
+  [x] fix html report style
+  [x] adjusted and updated manpage
+  [x] changed syntax for -i/-x options
+  [x] 'include/exclude modules' procedure wrong
+
+
+===> 0.8
+
+  [x] re-run, re-test core and modules
+  [x] add text report style support
+  [x] replace _print_error() with error(), warn() etc
+  [x] man page: update and add '-c' option
+  [x] check for installed tools
+  [x] nmap relative path file check
+  [x] status for 'how many targets left'
+  [x] deleted trailing whitespaces
+  [x] output of tools '>' instead of '->'
+
+===> 0.7
+
+  [x] 21.sh: deactivated ncftp anonymous login try
+  [x] added tcp and udp to modes in reports
+
+
+===> 0.6
+
+  [x] update manpage
+  [x] re-test nullscan core functionality
+  [x] retest nullscan and clean up
+  [x] replace 'timeout' with own timeout function [CANCELED]
+  [x] single username and single password
+  [x] build wlan based default example module / audit
+  [x] build lan based default example module / audit
+  [x] added '-o' flag for mode options
+  [x] fix: exclude modules
+  [x] host, service, webapp and lan mode extra options
+  [x] re-written filter_port_list (replaced awk/sed with egrep)
+  [x] print how many audits left while auditing, e.g. (1/10)
+  [x] add option: timeout for modules
+  [x] change nullscan version numbering
+  [x] re-test nullscan on many OS
+  [x] replace README with manpage
+  [x] change description for nullscan
+  [x] build webapp based modules / audits
+  [x] fix awk issues for solaris based systems
+  [x] fix '-t' option to delete duplicated 'run_audits' call
+  [x] update host/default.sh
+  [x] added report style option to nullscan.conf
+  [x] add option: support for command line target list
+  [x] refactor nullscan.sh code
+  [x] changed usage output
+
+
+===> 0.5
+
+  [x] support nmap xml logfile format
+  [x] support for -l host or -l tcp or -l udp
+  [x] added IPsec/IKE module
+
+
+===> 0.4
+
+  [x] generate html report
+  [x] added: create tcp/ and udp/ dir for ports
+  [x] added: various netbios / rpc tests
+  [x] added: tftp module
+  [x] added: dns cache snoop test
+
+
+===> 0.3
+
+  [x] upgrade '-l' option (-l mod1,mod2 or -l all, etc)
+  [x] exclude options (modules/tools) also in nullscan.conf
+  [x] option for 'include modules'
+  [x] option for 'include tools'
+  [x] build add_module option
+  [x] build make_module option
+  [x] upgrade README file
+  [x] comment the code
+  [x] change and adjust TODO file
+
+
+===> 0.2
+
+  [x] replaced getopt with getopts
+  [x] option for excluding tools
+  [x] option for excluding modules
+  [x] renamed auditx to nullscan
+  [x] code redesign
+
+
+===> 0.1
+
+  [x] initial release
