@@ -98,7 +98,7 @@ noptrix
 - Use '?' option-value for any cmdline options. It gives you information for usage and examples.
 - clean code; real project
 - nullscan is already packaged and available for [BlackArch Linux](https://www.blackarch.org/)
-- My master-branches are always dev-branches; use releases for stable versions.
+- My master-branches are always stable; dev-branches are created for current work.
 - All of my public stuff you find are officially announced and published via [nullsecurity.net](https://www.nullsecurity.net).
 
 # License
