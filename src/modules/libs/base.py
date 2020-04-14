@@ -59,7 +59,7 @@ def tool(func):
       return ret
     except:
       self.file.destroy_lock(func.__name__)
-      #traceback.print_exc()
+      traceback.print_exc()
 
     return None
 
@@ -211,7 +211,7 @@ class Base(Helper, ToolsHelper, Tools, Parser):
         _type='warn')
       return # don't exit. continue with other tools
     except:
-      #traceback.print_exc() # print stacktrace for debuging
+      traceback.print_exc() # print stacktrace for debuging
       return # don't exit. continue with other tools
 
     return
