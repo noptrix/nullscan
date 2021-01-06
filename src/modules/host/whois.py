@@ -106,7 +106,6 @@ class Whois(Base):
         results = list(sorted(set(results)))
         self._log('whois_cidr', results, data_end='\n')
 
-
     return
 
 

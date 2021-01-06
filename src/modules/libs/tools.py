@@ -594,24 +594,27 @@ class Tools(ToolsAttr):
     """ perform whois on domain or ipv4 addr """
 
     res = []
-    if target:
-      if _type == 'domain':
-        res.append(whois.whois(target))
+    try:
+      if target:
+        if _type == 'domain':
+          res.append(whois.whois(target))
+        else:
+          obj = IPWhois(target)
+          res.append(obj.lookup_rdap(depth=1))
       else:
-        obj = IPWhois(target)
-        res.append(obj.lookup_rdap(depth=1))
-    else:
-      if _type == 'domain':
-        log = self._read_log('domainname')
-      else:
-        log = self._read_log('ipv4addr')
-      for target in log:
-        if target:
-          if _type == 'domain':
-            res.append(whois.whois(target))
-          else:
-            obj = IPWhois(target)
-            res.append(obj.lookup_rdap(depth=1))
+        if _type == 'domain':
+          log = self._read_log('domainname')
+        else:
+          log = self._read_log('ipv4addr')
+        for target in log:
+          if target:
+            if _type == 'domain':
+              res.append(whois.whois(target))
+            else:
+              obj = IPWhois(target)
+              res.append(obj.lookup_rdap(depth=1))
+    except:
+      pass
 
     return res
 
