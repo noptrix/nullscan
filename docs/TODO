@@ -26,6 +26,12 @@ ChangeLog and TODO list for nullscan
   [ ] update man-page. add more infos etc. currently it's minimalistic
 
 
+===> 1.0.1
+
+  [x] bugfix: add try/except for now @ ipwhois if internal ip gets leaked. i
+      will deal with this leaked data, later.
+
+
 ===> 1.0.0
 
   [x] testing for 1.0.0 release
